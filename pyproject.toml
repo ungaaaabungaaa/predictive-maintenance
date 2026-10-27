@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cmapss-maintenance-lab"
+version = "0.1.0"
+description = "Reproducible engine-level RUL evaluation on NASA C-MAPSS FD001."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+authors = [{name = "Syed Abdul Muqeeth"}]
+dependencies = ["numpy>=2.0,<3", "pandas>=2.2,<4", "scikit-learn>=1.6,<2", "matplotlib>=3.9,<4"]
+
+[project.optional-dependencies]
+xgboost = ["xgboost>=3.0,<4"]
+dev = ["pytest>=8,<10", "pytest-cov>=6,<8", "ruff>=0.9,<1", "build>=1.2,<2"]
+
+[project.scripts]
+maintenance-lab = "predictive_maintenance.cli:main"
+
+[project.urls]
+Repository = "https://github.com/ungaaaabungaaa/predictive-maintenance"
+Issues = "https://github.com/ungaaaabungaaa/predictive-maintenance/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.coverage.run]
+source = ["predictive_maintenance"]
+

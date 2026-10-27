@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>FD001 maintenance experiment</title>
+<style>body{font:16px/1.6 system-ui;max-width:960px;margin:40px auto;padding:0 20px;color:#222}
+img{max-width:100%;height:auto}table{border-collapse:collapse;width:100%}
+th,td{padding:10px;text-align:left;border-bottom:1px solid #ddd}code{overflow-wrap:anywhere}</style>
+<main><h1>Predictive Maintenance</h1><p>C-MAPSS FD001 · verified-nasa-fd001</p>
+<p>Selected on 20 held-out training engines:
+<strong>random_forest</strong>.
+Refit on all 100 training engines before test evaluation.</p>
+<h2>Validation, capped RUL</h2><table><tr><th>Model</th><th>RMSE (cycles)</th><th>MAE (cycles)</th></tr>
+<tr><td>mean_baseline</td><td>33.77</td><td>27.76</td></tr><tr><td>ridge</td><td>22.51</td><td>18.80</td></tr><tr><td>random_forest</td><td>16.90</td><td>12.82</td></tr><tr><td>xgboost</td><td>17.59</td><td>14.11</td></tr></table><h2>Test endpoints, uncapped RUL</h2>
+<p>100 engines · RMSE 20.21 cycles ·
+MAE 14.92 cycles.</p>
+<img src="rul-predictions.png" alt="Actual versus predicted remaining cycles and signed errors">
+<img src="maintenance-bands.png" alt="Counts of predicted versus actual threshold bands">
+<h2>Limits</h2><p>Simulated engine data. RUL is measured in operating cycles, not hours.
+The 125-cycle target cap is a modeling choice. Bands and the RUL index are heuristic labels,
+not calibrated failure probabilities. This experiment is not an operational safety system.</p>
+<p>See <a href="metrics.json">complete metrics and provenance</a> and
+<a href="predictions.csv">per-engine predictions</a>.</p></main></html>
