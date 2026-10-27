@@ -1,0 +1,3 @@
+include requirements-benchmark.txt CONTRIBUTING.md SECURITY.md
+recursive-include docs *.md *.json *.csv *.png *.html
+recursive-include notebooks *.ipynb
