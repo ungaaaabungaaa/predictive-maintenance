@@ -1,5 +1,9 @@
 # Predictive Maintenance
 
+![Predictive Maintenance Using Machine Learning line-art concept](docs/images/project-cover.png)
+
+*Generated line-art concept illustration.*
+
 A reproducible remaining-useful-life experiment on NASA's **simulated C-MAPSS FD001 engine data**. It compares baselines and tree models, selects a model on held-out engines, and evaluates that model on the official test endpoints.
 
 The first recorded run selected Random Forest: **20.21 cycles RMSE and 14.92 cycles MAE** against uncapped test RUL, across 100 engines. These are measured benchmark errors. They are not a failure guarantee or results from real equipment. Exact inputs and results are in [the recorded run](docs/results/2026-10-27/metrics.json).
