@@ -10,4 +10,6 @@ Local checks on 27 October 2026 used Python 3.12.14 on macOS ARM64 and the versi
 - Generated scientific figures were visually inspected; they show actual run outputs. Notebook code cells parsed successfully; the notebook itself was not executed through Jupyter.
 - `git diff --check` passed. No raw data, private inputs, model binaries, or pending generated cover were added to Git.
 
+The first CI run passed Linux and Windows but exposed a missing macOS OpenMP runtime during XGBoost import. The workflow now installs `libomp` on macOS before testing; it keeps the XGBoost test enabled. This platform requirement is also in the README. No benchmark/model source was changed for this correction.
+
 Local checks do not establish CI success. CI status is recorded on the pull request and must pass before merge. Hardware/field operation is outside this simulation benchmark and has not been tested.

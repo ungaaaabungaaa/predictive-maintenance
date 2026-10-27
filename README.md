@@ -10,6 +10,8 @@ The first recorded run selected Random Forest: **20.21 cycles RMSE and 14.92 cyc
 
 Use Python **3.12 or newer**. The benchmark used Python 3.12.14. A CPU is sufficient; no account, API key, or GPU is required.
 
+On macOS, the optional XGBoost wheel also needs the OpenMP runtime: `brew install libomp`. Windows needs the Visual C++ runtime. See [XGBoost's installation guide](https://xgboost.readthedocs.io/en/stable/install.html). CI installs OpenMP on its macOS runners. The base installation without `--xgboost` does not require this XGBoost dependency.
+
 ```sh
 git clone https://github.com/ungaaaabungaaa/predictive-maintenance.git
 cd predictive-maintenance
