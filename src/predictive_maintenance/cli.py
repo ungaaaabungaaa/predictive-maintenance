@@ -3,13 +3,14 @@
 import argparse
 import json
 import sys
+from hashlib import sha256
 from pathlib import Path
 from urllib.error import URLError
 
 from . import __version__
-from .data import download_fd001
+from .data import digest, download_fd001, read_trajectories
 from .experiment import run_experiment
-from .pipeline import ExperimentConfig
+from .pipeline import ExperimentConfig, cross_validate_engines
 
 
 def main(argv=None) -> int:
@@ -26,10 +27,33 @@ def main(argv=None) -> int:
     run.add_argument("--window", type=int, default=10)
     run.add_argument("--trees", type=int, default=120)
     run.add_argument("--xgboost", action="store_true", help="Also compare optional XGBoost.")
+    cv = commands.add_parser("cross-validate", help="Compare candidates on training-engine folds only.")
+    cv.add_argument("--data-dir", type=Path, default=Path("data/fd001"))
+    cv.add_argument("--output", type=Path, required=True, help="New JSON file; never overwrite.")
+    cv.add_argument("--folds", type=int, default=5)
+    cv.add_argument("--seed", type=int, default=42)
+    cv.add_argument("--cap", type=int, default=125)
+    cv.add_argument("--window", type=int, default=10)
+    cv.add_argument("--trees", type=int, default=120)
+    cv.add_argument("--xgboost", action="store_true")
     args = parser.parse_args(argv)
     try:
         if args.command == "download":
             print(json.dumps(download_fd001(args.data_dir), indent=2))
+        elif args.command == "cross-validate":
+            if args.output.exists() or args.output.is_symlink():
+                raise FileExistsError("Choose a new cross-validation output file.")
+            config = ExperimentConfig(args.seed, args.cap, args.window, args.trees, args.xgboost)
+            source = args.data_dir / "train_FD001.txt"
+            result = cross_validate_engines(read_trajectories(source), config, args.folds)
+            result["training_data_sha256"] = digest(source)
+            result["package_version"] = __version__
+            modules = sorted(Path(__file__).parent.glob("*.py"))
+            result["source_sha256"] = sha256(b"".join(p.name.encode() + p.read_bytes() for p in modules)).hexdigest()
+            text = json.dumps(result, indent=2, allow_nan=False) + "\n"
+            with args.output.open("x", encoding="utf-8", newline="\n") as output:
+                output.write(text)
+            print(f"Training-engine cross-validation: {len(result['folds'])} folds; {result['training_engines']} engines.")
         else:
             config = ExperimentConfig(args.seed, args.cap, args.window, args.trees, args.xgboost)
             result = run_experiment(args.data_dir, args.output, config)

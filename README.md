@@ -87,3 +87,11 @@ See [CONTRIBUTING](CONTRIBUTING.md), [SECURITY](SECURITY.md), and [LICENSE](LICE
 ## Sensor distribution diagnostics
 
 Each new run includes per-sensor training/test means and standardized mean shifts in `metrics.json` and the HTML report. Reference standard deviations use training rows only. Constant training signals have no standardized score and a separate change flag. Comparisons use all observed rows; differing operating-cycle mixtures can cause shifts. This is a descriptive check, not a fault alarm, significance test, or tuning input. Test RUL labels are not used.
+
+## Cross-validate on training engines
+
+```sh
+maintenance-lab cross-validate --data-dir data/fd001 --folds 5 --output engine-cv.json
+```
+
+This optional command compares the same candidate models on disjoint folds of training engines. Each engine contributes one seeded snapshot from 30–90% of its observed lifetime. Preprocessing is fitted on each fold's training engines only. The JSON preserves allocations, snapshots, per-fold errors, pooled per-engine errors, configuration, and the training-file hash. It does not read official test trajectories or test RUL and does not change the existing model selection/test protocol. Fold comparisons are descriptive; do not select changes against official test results. Require at least five engines and 2–10 folds, with no more folds than engines. The output must be a new file.
