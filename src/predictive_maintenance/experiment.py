@@ -12,8 +12,8 @@ import numpy as np
 import pandas as pd
 
 from . import __version__
-from .data import FILE_SHA256, digest, read_offsets, read_trajectories
-from .evaluation import maintenance_bands, regression_metrics
+from .data import COLUMNS, FILE_SHA256, digest, read_offsets, read_trajectories
+from .evaluation import maintenance_bands, regression_metrics, sensor_drift
 from .features import endpoints
 from .pipeline import ExperimentConfig, fit_and_select, predict_last
 from .report import write_report
@@ -52,6 +52,7 @@ def run_experiment(data_dir: Path, output: Path, config: ExperimentConfig) -> di
         "counts": {"training_engines": int(train.unit.nunique()), "training_rows": len(train),
                    "test_engines": int(test.unit.nunique()), "test_rows": len(test)},
         "selection": selection,
+        "sensor_drift": sensor_drift(train[COLUMNS[5:]], test[COLUMNS[5:]]),
         "test_metrics_uncapped": regression_metrics(actual, predicted),
         "test_metrics_capped": regression_metrics(actual_capped, predicted),
         "heuristic_bands": {"inspect_at_or_below_cycles": 20, "plan_at_or_below_cycles": 50,
