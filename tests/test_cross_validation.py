@@ -50,3 +50,20 @@ def test_cv_cli_reads_training_only_and_preserves_existing_output(tmp_path):
     assert output.read_bytes() == original
     assert not (source / "test_FD001.txt").exists()
     assert not (source / "RUL_FD001.txt").exists()
+
+
+@pytest.mark.parametrize("index_kind", ["offset", "duplicate", "string"])
+def test_cv_uses_row_positions_without_requiring_dataframe_index_labels(index_kind):
+    train = trajectories(10, 30)
+    expected = cross_validate_engines(train, ExperimentConfig(trees=3), 3)
+    original = train.copy()
+    if index_kind == "offset":
+        train.index = range(100, 400)
+    elif index_kind == "duplicate":
+        train.index = [0] * len(train)
+    else:
+        train.index = [f"row-{index}" for index in range(len(train))]
+    before = train.index.copy()
+    assert cross_validate_engines(train, ExperimentConfig(trees=3), 3) == expected
+    assert train.index.equals(before)
+    assert train.reset_index(drop=True).equals(original)

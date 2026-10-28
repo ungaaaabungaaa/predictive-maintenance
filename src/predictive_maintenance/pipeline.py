@@ -102,6 +102,7 @@ def cross_validate_engines(train: pd.DataFrame, config: ExperimentConfig, folds:
     """
     from dataclasses import asdict
 
+    train = train.reset_index(drop=True)
     units = sorted(train.unit.unique().tolist())
     if type(folds) is not int or not 2 <= folds <= min(10, len(units)) or len(units) < 5:
         raise ValueError("Cross-validation needs at least five engines and 2–10 folds, no more than engines.")
