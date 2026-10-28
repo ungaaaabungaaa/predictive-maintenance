@@ -50,6 +50,13 @@ def write_report(output: Path, metrics: dict, predictions) -> None:
         f"<td>{value['mae_cycles']:.2f}</td></tr>"
         for name, value in metrics["selection"]["validation_metrics"].items()
     )
+    drift_rows = "".join(
+        f"<tr><td>{escape(name)}</td><td>{value['reference_mean']:.3f}</td>"
+        f"<td>{value['observed_mean']:.3f}</td><td>"
+        + (f"{value['standardized_mean_shift']:.3f}"
+           if value["standardized_mean_shift"] is not None else "constant reference")
+        + "</td></tr>" for name, value in metrics["sensor_drift"]["sensors"].items()
+    )
     test = metrics["test_metrics_uncapped"]
     html = f"""<!doctype html>
 <html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
@@ -67,6 +74,13 @@ Refit on all {metrics['counts']['training_engines']} training engines before tes
 MAE {test['mae_cycles']:.2f} cycles.</p>
 <img src="rul-predictions.png" alt="Actual versus predicted remaining cycles and signed errors">
 <img src="maintenance-bands.png" alt="Counts of predicted versus actual threshold bands">
+<h2>Sensor distribution diagnostics</h2>
+<p>All training rows versus all observed test rows; standardized shifts use training-only
+population standard deviations. Constant references have no standardized score;
+metrics.json records whether their observed values changed. Different cycle mixtures can
+produce shifts. These are descriptive comparisons, not fault alarms or significance tests.</p>
+<table><tr><th>Sensor</th><th>Training mean</th><th>Test mean</th><th>Mean shift (training SD)</th></tr>
+{drift_rows}</table>
 <h2>Limits</h2><p>Simulated engine data. RUL is measured in operating cycles, not hours.
 The {metrics['config']['cap']}-cycle target cap is a modeling choice. Bands and the RUL index are heuristic labels,
 not calibrated failure probabilities. This experiment is not an operational safety system.</p>

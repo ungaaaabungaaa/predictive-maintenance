@@ -29,3 +29,27 @@ def maintenance_bands(predicted: np.ndarray, cap: float = 125) -> pd.DataFrame:
         "band": np.select([predicted <= 20, predicted <= 50], ["inspect", "plan"], default="monitor"),
         "rul_index_percent": np.clip(predicted / cap * 100, 0, 100),
     })
+
+
+def sensor_drift(reference: pd.DataFrame, observed: pd.DataFrame) -> dict:
+    """Describe mean signal shifts using reference-only population standard deviations.
+
+    This compares observed rows, without RUL labels or a calibrated alarm threshold.
+    Different operating-cycle mixtures can produce shifts without equipment faults.
+    """
+    if (reference.empty or observed.empty or not reference.columns.is_unique
+            or not reference.columns.equals(observed.columns)
+            or not np.isfinite(reference.to_numpy()).all()
+            or not np.isfinite(observed.to_numpy()).all()):
+        raise ValueError("Drift requires nonempty finite frames with identical unique columns.")
+    sensors = {}
+    for name in reference.columns:
+        baseline = float(reference[name].mean())
+        current = float(observed[name].mean())
+        scale = float(reference[name].std(ddof=0))
+        sensors[name] = {
+            "reference_mean": baseline, "observed_mean": current,
+            "standardized_mean_shift": (current - baseline) / scale if scale else None,
+            "constant_reference_changed": bool(scale == 0 and (observed[name] != baseline).any()),
+        }
+    return {"reference_rows": len(reference), "observed_rows": len(observed), "sensors": sensors}

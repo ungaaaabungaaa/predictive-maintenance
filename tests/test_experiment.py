@@ -27,6 +27,9 @@ def test_full_experiment_writes_measured_report_and_refuses_overwrite(tmp_path):
     assert result["dataset_status"] == "custom-unverified"
     assert result["counts"] == {"training_engines": 10, "training_rows": 300,
                                "test_engines": 5, "test_rows": 75}
+    assert result["sensor_drift"]["reference_rows"] == 300
+    assert result["sensor_drift"]["observed_rows"] == 75
+    assert len(result["sensor_drift"]["sensors"]) == 21
     assert result["test_metrics_uncapped"]["rmse_cycles"] >= 0
     assert {"metrics.json", "predictions.csv", "report.html", "rul-predictions.png",
             "maintenance-bands.png"}.issubset({p.name for p in output.iterdir()})

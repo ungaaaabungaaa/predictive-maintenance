@@ -83,3 +83,7 @@ The portfolio's linked Colab notebook and Medium article could not be accessed d
 This repository was `Data_Science_projects`. Its earlier fake-news examples remain on [archive/before-predictive-maintenance-2026-10-27](https://github.com/ungaaaabungaaa/predictive-maintenance/tree/archive/before-predictive-maintenance-2026-10-27), at `27b972635037dee8a5260b2806df28c3228cae28`. Existing stars and earlier commits predate this project.
 
 See [CONTRIBUTING](CONTRIBUTING.md), [SECURITY](SECURITY.md), and [LICENSE](LICENSE).
+
+## Sensor distribution diagnostics
+
+Each new run includes per-sensor training/test means and standardized mean shifts in `metrics.json` and the HTML report. Reference standard deviations use training rows only. Constant training signals have no standardized score and a separate change flag. Comparisons use all observed rows; differing operating-cycle mixtures can cause shifts. This is a descriptive check, not a fault alarm, significance test, or tuning input. Test RUL labels are not used.
